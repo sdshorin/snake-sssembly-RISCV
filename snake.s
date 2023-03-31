@@ -490,12 +490,13 @@ draw_snake_pretty.loop:
 
     # load next element
     mv a0, .circle_array
-    addi a1, .snake_length, 1 # get next element (maybe it's .snake_length + 1 - doesn't matter,
+    addi a1, .current_element, 1 # get next element (maybe it's .snake_length + 1 - doesn't matter,
                                 # in this case .next won't be used
     jal ra, FUNC_circle_array_get_elem
     mv .next_x, a0 # save next segment to .next
     mv .next_y, a1
 
+    # Get direction from current to next element
     mv a0, .current_x
     mv a1, .current_y
     mv a2, .prev_x
@@ -503,6 +504,7 @@ draw_snake_pretty.loop:
     jal ra, FUNC.get_points_direction
     mv .prev_elem_dir, a0
 
+    # Get direction from current to previous element
     mv a0, .current_x
     mv a1, .current_y
     mv a2, .next_x
