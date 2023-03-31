@@ -438,7 +438,7 @@ get_points_direction.return:
     jalr zero, 0(ra)
 
 
-
+.eqv .is_repeated_element, s0 # is element repeated caused snake eat something
 .eqv .current_element s1
 .eqv .snake_length s3
 .eqv .prev_x s4
@@ -452,6 +452,7 @@ get_points_direction.return:
 # draw all segments of snake with titles
 FUNC.draw_snake_pretty:
     pushw(ra)
+    pushw(.is_repeated_element) # flag is two snake element placed in one cell simultaneously
     pushw(.current_element) # 
     pushw(.circle_array) # s2 - pointer to snake array
     pushw(.snake_length) # snake lengtht
@@ -480,6 +481,7 @@ FUNC.draw_snake_pretty:
 draw_snake_pretty.loop:
     bge .current_element, .snake_length, return.draw_snake_pretty
 
+    li .is_repeated_element, 0
     # current element becomes previous
     mv .prev_x, .current_x,
     mv .prev_y, .current_y,
@@ -506,6 +508,7 @@ draw_snake_pretty.loop.reload_last_element:
 
     # next element has the same potition (is't props) - skip it
     addi .current_element, .current_element, 1
+    li .is_repeated_element, 1
     j draw_snake_pretty.loop.reload_last_element
 
 draw_snake_pretty.loop.next_element_ok:
@@ -540,6 +543,13 @@ draw_snake_pretty.loop.next_element_ok:
     beqz .current_element, draw_snake_pretty.loop.draw_head # draw head
     addi t0, .snake_length, -1
     beq .current_element, t0, draw_snake_pretty.loop.draw_tail  # draw tail
+
+    beqz .is_repeated_element, draw_snake_pretty.loop.draw_body # draw body by default
+    # addition check for repeated element
+    # Maybe it is head (if snake eated food in this frame) - in this case we should draw head (but .current_element == 1)
+    # don't need to check this for tail - in this case previous code working properly
+    li t0, 1
+    beq .current_element, t0, draw_snake_pretty.loop.draw_head  # both first and second elements are head (they are placed in one cell simultaneously)
 
     # draw body by default
 draw_snake_pretty.loop.draw_body:
@@ -578,6 +588,7 @@ return.draw_snake_pretty:
     popw(.snake_length) # snake lengtht
     popw(.circle_array) # s2 - pointer to snake array
     popw(.current_element) # 
+    popw(.is_repeated_element)
     popw(ra)
     jalr zero, 0(ra)
 
