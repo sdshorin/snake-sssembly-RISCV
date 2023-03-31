@@ -7,26 +7,117 @@ from PIL import Image
 CONFIG = {
     "apple.png": [
         {
-            # "rotation": 0,
+            # "rotation": 0, # counterclockwise rotation
             "output_name": "asset_apple"
-         }
+        }
     ],
     "mouse.png": [
         {
             # "rotation": 0,
             "output_name": "asset_mouse"
-         }
+        }
     ],
     "mushroom.png": [
         {
             # "rotation": 0,
             "output_name": "asset_mushroom"
-         }
+        }
+    ],
+    "head.png": [
+        {
+            # "rotation": 0,
+            "output_name": "asset_head_bottom"
+        },
+        {
+            "rotation": 90,
+            "output_name": "asset_head_right"
+        },
+        {
+            "rotation": 180,
+            "output_name": "asset_head_top"
+        },
+        {
+            "rotation": 270,
+            "output_name": "asset_head_left"
+        },
+    ],
+    "body.png": [
+        {
+            # "rotation": 0,
+            "output_name": "asset_body_top_to_bottom"
+        },
+        {
+            "rotation": 90,
+            "output_name": "asset_body_left_to_right"
+        },
+        {
+            "rotation": 180,
+            "output_name": "asset_body_bottom_to_top"
+        },
+        {
+            "rotation": 270,
+            "output_name": "asset_body_right_to_left"
+        },
+    ],
+    "tail.png": [
+        {
+            # "rotation": 0,
+            "output_name": "asset_tail_from_top"
+        },
+        {
+            "rotation": 90,
+            "output_name": "asset_tail_from_left"
+        },
+        {
+            "rotation": 180,
+            "output_name": "asset_tail_from_bottom"
+        },
+        {
+            "rotation": 270,
+            "output_name": "asset_tail_from_right"
+        },
+    ],
+    "snake_rotation_1.png": [
+        {
+            # "rotation": 0,
+            "output_name": "asset_body_top_to_right"
+        },
+        {
+            "rotation": 90,
+            "output_name": "asset_body_left_to_top"
+        },
+        {
+            "rotation": 180,
+            "output_name": "asset_body_bottom_to_left"
+        },
+        {
+            "rotation": 270,
+            "output_name": "asset_body_right_to_bottom"
+        },
+    ],
+    "snake_rotation_2.png": [
+        {
+            # "rotation": 0,
+            "output_name": "asset_body_left_to_bottom"
+        },
+        {
+            "rotation": 90,
+            "output_name": "asset_body_bottom_to_right"
+        },
+        {
+            "rotation": 180,
+            "output_name": "asset_body_right_to_top"
+        },
+        {
+            "rotation": 270,
+            "output_name": "asset_body_top_to_left"
+        },
     ],
 }
 
 ASSETS_IMPORT_FILE = "game_assets.s"
 PNG_SOURCE_DIR = "png_source/"
+ASSETS_DIR = "assets/"
 
 def rgba_to_hex(r, g, b, a):
     return '0x{:02x}{:02x}{:02x}{:02x}'.format(a, r, g, b)
@@ -49,7 +140,7 @@ def export_image(image_path, params):
             code = rgba_to_hex(*image_rgba.getpixel((x, y)))
             export_content += code + ", "
         export_content += "\n"
-    file_name = params["output_name"] + ".s"
+    file_name = ASSETS_DIR + params["output_name"] + ".s"
     with open(file_name, 'w') as f:
         f.write(export_content)
     return file_name
