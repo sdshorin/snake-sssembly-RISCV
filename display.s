@@ -81,6 +81,7 @@ FUNC_return_draw_cell:
 FUNC.draw_tile:
     pushw(s3)
     pushw(s4)
+    pushw(s5)
     li .t_display_ptr, DISPLAY_ADDRESS # FUNC.draw_tile
 
     li .t_temp_dis, SCREEN_WIDTH
@@ -106,7 +107,11 @@ draw_tile.cell_loop:
     bge .t_display_ptr, .t_max_ptr, draw_tile.line_finished # draw_tile.cell_loop
     lw s4, 0(s3) # load pixel
     addi s3, s3, 4
+    li s5, 0xff000000 # alpha mask
+    and s5, s5, s4 # check pixel alpha
+    beqz s5, draw_tile.skip_pixel # skip transparent pixel
     sw s4, 0(.t_display_ptr) # fill cell with loaded pixel
+draw_tile.skip_pixel:
     addi .t_display_ptr, .t_display_ptr, 4
     j draw_tile.cell_loop
 draw_tile.line_finished:
@@ -119,6 +124,7 @@ draw_tile.line_finished:
     j draw_tile.line_loop
 
 return.draw_cell:
+    popw(s5)
     popw(s4)
     popw(s3)
     jalr zero, 0(ra) # return.draw_cell
