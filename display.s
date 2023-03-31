@@ -16,7 +16,7 @@ FUNC_reset_display:
     li .t_temp_dis, 4 #128 # 4 * 
     mul .t_max_ptr, .t_max_ptr, .t_temp_dis # .t_max_ptr = screen size in bytes
     add .t_max_ptr, .t_max_ptr, .t_display_ptr
-    li .t_color, 0x00af00
+    li .t_color, BACKGROUND_COLOR
 
 reset_screen_loop:
     bge .t_display_ptr, .t_max_ptr, FUNC_return_reset_display # reset_screen_loop
@@ -27,6 +27,16 @@ reset_screen_loop:
 
 FUNC_return_reset_display:
     jalr zero, 0(ra) # FUNC_return_reset_display
+
+# paint over cell to hide content
+# a0 - x
+# a1 - y
+FUNC.reset_cell:
+    pushw(ra)
+    li a2, BACKGROUND_COLOR
+    jal ra, FUNC_draw_cell
+    popw(ra)
+    jalr zero, 0(ra)
 
 
 # a0 - x

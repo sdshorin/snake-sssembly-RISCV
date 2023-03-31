@@ -185,6 +185,42 @@ FUNC_return_draw_snake:
     jalr zero, 0(ra)
 
 
+# paint over snake and props to speed up screen updating
+FUNC.paint_over_titles:
+    pushw(ra)
+    pushw(.circle_array)
+    pushw(s3)
+
+    la t0, food_position # load food position
+    lw a0, 0(t0) # food x
+    lw a1, 4(t0) # food y
+    jal ra, FUNC.reset_cell
+
+    # get first snake segment
+    la .circle_array, snake_data
+    addi .circle_array, .circle_array, 4 # pointer to snake circle array
+
+    lw s3, 0(.circle_array) # save snake lengthto s3
+paint_over_titles.loop:
+    beqz s3, paint_over_titles.return
+
+    mv a0, .circle_array
+    addi a1, s3, -1 # get next index
+    jal ra, FUNC_circle_array_get_elem
+    # a0 - x
+    # a1 - y
+    jal ra, FUNC.reset_cell
+    addi s3, s3, -1
+    j paint_over_titles.loop
+
+paint_over_titles.return:
+    popw(s3)
+    popw(.circle_array)
+    popw(ra)
+    jalr zero, 0(ra)
+
+
+# add new element to beggining of snake
 FUNC_increase_snake:
     nop # FUNC_increase_snake
     pushw(ra)

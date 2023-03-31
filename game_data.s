@@ -34,6 +34,7 @@
 .eqv TAILL 3 # doesn't compile with TAIL. Therefore double L using here
 
 .eqv DISPLAY_ADDRESS 0x10040000
+.eqv BACKGROUND_COLOR 0x00af00
 
 .eqv FOOD_PROPS_QUANTITY 3
 
@@ -45,6 +46,8 @@ food_position:
     .word 5 # y
 food_assert:
     .word 0 # 0 - apple, 1 - mouse, 2 - mushroom
+is_first_frame_drawn:
+    .word 0
 
 # Snake tiles table. Allow to select title with target shipe and rotation
 # to tind a head tail with next element on top, just load correesponded pointer: (la snake_head_table) + (TOP) * 4
