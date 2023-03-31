@@ -10,17 +10,30 @@ CONFIG = {
             # "rotation": 0,
             "output_name": "asset_apple"
          }
-    ]
+    ],
+    "mouse.png": [
+        {
+            # "rotation": 0,
+            "output_name": "asset_mouse"
+         }
+    ],
+    "mushroom.png": [
+        {
+            # "rotation": 0,
+            "output_name": "asset_mushroom"
+         }
+    ],
 }
 
 ASSETS_IMPORT_FILE = "game_assets.s"
+PNG_SOURCE_DIR = "png_source/"
 
 def rgba_to_hex(r, g, b, a):
     return '0x{:02x}{:02x}{:02x}{:02x}'.format(a, r, g, b)
 
 
 def export_image(image_path, params):
-    image = Image.open(image_path)
+    image = Image.open(PNG_SOURCE_DIR + image_path)
     if "rotation" in params:
         image = image.rotate(int(params["rotation"]), expand=True)
     image_rgba = image.convert("RGBA")
