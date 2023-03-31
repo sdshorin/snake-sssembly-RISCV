@@ -129,3 +129,62 @@ return.draw_cell:
     popw(s3)
     jalr zero, 0(ra) # return.draw_cell
 
+
+# This function look up pointer snake tile in 2-d array (according to 
+# previous and next elements positions) and call FUNC.draw_tile to draw it
+# a0 = x
+# a1 = y
+# a2 = previous element position
+# a3 = next element position
+# a4 - (BODY, HEAD, TAILL) - tile type
+FUNC.draw_snake_tile:
+    pushw(ra)
+
+    li t0, HEAD
+    beq t0, a4, draw_snake_tile.head
+    li t0, BODY
+    beq t0, a4, draw_snake_tile.body
+    li t0, TAILL
+    beq t0, a4, draw_snake_tile.tail
+# to tind a head tail with next element on top, just load correesponded pointer: (la snake_head_table) + (TOP) * 4
+draw_snake_tile.head:
+    la t0, snake_head_table
+    li t1, 4
+    mul a3, a3, t1 # convert direction id to byte offset
+
+    add a2, t0, a3 # a2 pointed to element in texture table
+    lw a2, 0(a2) # load texture address
+    jal ra, FUNC.draw_tile
+
+    j draw_snake_tile.return
+
+# to tind a head tail with next previous on top, just load correesponded pointer: (la snake_tail_table) + (TOP) * 4
+draw_snake_tile.tail:
+    la t0, snake_tail_table
+    li t1, 4
+    mul a2, a2, t1 # convert direction id to byte offset
+
+    add a2, t0, a2 # a2 pointed to element in texture table
+    lw a2, 0(a2) # load texture address
+    jal ra, FUNC.draw_tile
+    
+    j draw_snake_tile.return
+
+# to find body tile with previous element on top and next element on right: (la snake_body_table) + (TOP * 4 + RIGHT) * 4
+draw_snake_tile.body:
+    la t0, snake_body_table
+    li t1, 4
+    mul a2, a2, t1 # select row in 2-d array (because row size is 4 element)
+    add a2, a3, a2 # a2 - element position in array
+    mul a2, a2, t1 # multiply by 4 - becouse each element in array has 4 bite size
+
+    add a2, t0, a2 # a2 pointed to element in texture table
+    lw a2, 0(a2) # load texture address
+    jal ra, FUNC.draw_tile
+    
+    j draw_snake_tile.return
+
+draw_snake_tile.return:
+
+    popw(ra)
+    jalr zero, 0(ra)

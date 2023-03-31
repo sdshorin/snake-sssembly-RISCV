@@ -29,7 +29,8 @@ game_step:
     
     jal ra, FUNC_reset_display
     jal ra, FUNC_draw_food
-    jal ra, FUNC_draw_snake
+    # jal ra, FUNC_draw_snake
+    jal ra, FUNC.draw_snake_pretty
 
 
     popw(s0)

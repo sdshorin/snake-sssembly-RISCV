@@ -385,3 +385,200 @@ FUNC_spawn_new_food:
 
 
 
+# Compute direction to point. Support only LEFT, TOP, RIGHT, BOTTOM
+# a0 -  from_x
+# a1 -  from_y
+# a2 -  to_x
+# a3 -  to_y
+# return:
+# a0 - (LEFT, TOP, RIGHT, BOTTOM)
+FUNC.get_points_direction:
+
+    sub a2, a2, a0 # to_x = to_x - from_x
+
+    beqz a2, get_points_direction.check_y # points have the same x, need to check y
+
+    # check x diff
+    li t0, 1
+    beq a2, t0, get_points_direction.right
+    li t0, -1
+    beq a2, t0, get_points_direction.left
+
+    # snake go threw screen side 
+    bge a2, zero, get_points_direction.right
+    bge zero, a2, get_points_direction.left
+
+get_points_direction.check_y:
+    sub a3, a3, a1 # to_y = to_y - from_y
+
+    # check y diff
+    li t0, 1
+    beq a3, t0, get_points_direction.bottom
+    li t0, -1
+    beq a3, t0, get_points_direction.top
+
+    # snake go threw screen side
+    bge a3, zero, get_points_direction.bottom
+    bge zero, a3, get_points_direction.top
+
+get_points_direction.left:
+    li a0, LEFT
+    j get_points_direction.return
+get_points_direction.top:
+    li a0, TOP
+    j get_points_direction.return
+get_points_direction.right:
+    li a0, RIGHT
+    j get_points_direction.return
+get_points_direction.bottom:
+    li a0, BOTTOM
+    j get_points_direction.return
+
+get_points_direction.return:
+    jalr zero, 0(ra)
+
+
+
+.eqv .current_element s1
+.eqv .snake_length s3
+.eqv .prev_x s4
+.eqv .prev_y s5
+.eqv .current_x s6
+.eqv .current_y s7
+.eqv .next_x s8
+.eqv .next_y s9
+.eqv .prev_elem_dir s10
+.eqv .next_elem_dir s11
+# draw all segments of snake with titles
+FUNC.draw_snake_pretty:
+    pushw(ra)
+    pushw(.current_element) # 
+    pushw(.circle_array) # s2 - pointer to snake array
+    pushw(.snake_length) # snake lengtht
+    pushw(.prev_x) # x of previous element
+    pushw(.prev_y) # y of previous element
+    pushw(.current_x) # x of current element
+    pushw(.current_y) # y of current element
+    pushw(.next_x) # x of next element
+    pushw(.next_y) # y of next element
+    pushw(.prev_elem_dir) # direction to previous element
+    pushw(.next_elem_dir) # direction to text element
+
+    # init counters
+    la .circle_array, snake_data 
+    addi .circle_array, .circle_array, 4 # pointer to snake circle array
+    lw .snake_length, 0(.circle_array) # save snake length to s3
+    li .current_element, 0
+
+    mv a0, .circle_array # load address of next segment
+    li a1, 0
+    jal ra, FUNC_circle_array_get_elem
+    mv .next_x, a0 # load first segment to .next
+    mv .next_y, a1
+
+# draw from end
+draw_snake_pretty.loop:
+    bge .current_element, .snake_length, return.draw_snake_pretty
+
+    # current element becomes previous
+    mv .prev_x, .current_x,
+    mv .prev_y, .current_y,
+
+    # next element becomes current
+    mv .current_x, .next_x,
+    mv .current_y, .next_y,
+
+    # load next element
+    mv a0, .circle_array
+    addi a1, .snake_length, 1 # get next element (maybe it's .snake_length + 1 - doesn't matter,
+                                # in this case .next won't be used
+    jal ra, FUNC_circle_array_get_elem
+    mv .next_x, a0 # save next segment to .next
+    mv .next_y, a1
+
+    mv a0, .current_x
+    mv a1, .current_y
+    mv a2, .prev_x
+    mv a3, .prev_y
+    jal ra, FUNC.get_points_direction
+    mv .prev_elem_dir, a0
+
+    mv a0, .current_x
+    mv a1, .current_y
+    mv a2, .next_x
+    mv a3, .next_y
+    jal ra, FUNC.get_points_direction
+    mv .next_elem_dir, a0
+
+    # put_string(POS)
+    newline
+    print_int(.prev_elem_dir)
+    put_char(' ')
+    print_int(.next_elem_dir)
+    newline
+
+
+    # select current snake part
+    beqz .current_element, draw_snake_pretty.loop.draw_head # draw head
+    addi t0, .snake_length, -1
+    beq .current_element, t0, draw_snake_pretty.loop.draw_tail  # draw tail
+
+    # draw body by default
+draw_snake_pretty.loop.draw_body:
+    li a4, BODY
+    j draw_snake_pretty.loop.call_draw_title
+
+draw_snake_pretty.loop.draw_head:
+    li a4, HEAD
+    j draw_snake_pretty.loop.call_draw_title
+draw_snake_pretty.loop.draw_tail:
+    li a4, TAILL
+    j draw_snake_pretty.loop.call_draw_title
+
+draw_snake_pretty.loop.call_draw_title:
+    mv a0, .current_x
+    mv a1, .current_y
+    mv a2, .prev_elem_dir
+    mv a3, .next_elem_dir
+    # a4 - (BODY, HEAD, TAILL) - tile type
+    jal ra, FUNC.draw_snake_tile
+
+    addi .current_element, .current_element, 1
+    j draw_snake_pretty.loop
+
+return.draw_snake_pretty:
+
+
+    popw(.next_elem_dir) # direction to text element
+    popw(.prev_elem_dir) # direction to previous element
+    popw(.next_y) # y of next element
+    popw(.next_x) # x of next element
+    popw(.current_y) # y of current element
+    popw(.current_x) # x of current element
+    popw(.prev_y) # y of previous element
+    popw(.prev_x) # x of previous element
+    popw(.snake_length) # snake lengtht
+    popw(.circle_array) # s2 - pointer to snake array
+    popw(.current_element) # 
+    popw(ra)
+    jalr zero, 0(ra)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -26,19 +26,19 @@ CONFIG = {
     "head.png": [
         {
             # "rotation": 0,
-            "output_name": "asset_head_bottom"
+            "output_name": "asset_head_to_bottom"
         },
         {
             "rotation": 90,
-            "output_name": "asset_head_right"
+            "output_name": "asset_head_to_right"
         },
         {
             "rotation": 180,
-            "output_name": "asset_head_top"
+            "output_name": "asset_head_to_top"
         },
         {
             "rotation": 270,
-            "output_name": "asset_head_left"
+            "output_name": "asset_head_to_left"
         },
     ],
     "body.png": [
