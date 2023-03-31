@@ -24,7 +24,7 @@ The game logic in this project is primarily implemented in the `game_step.s` fil
 
 To build and run the Snake game, follow the steps below:
 
-1.  Install the RARS simulator from [GitHub](https://github.com/TheThirdOne/rars).
+1.  Install the RARS simulator from [GitHub](https://github.com/TheThirdOne/rars)(tested with v1.6).
 2.  Open the `main.s` file in RARS and compile it.
 3.  In the RARS menu topbar, click on "Tools" and open the "Timer Tool," "Keyboard and Display MMIO Simulator," and "Bitmap Display."
 4.  In the Bitmap Display settings, change the "Base Address" to `0x10040000`.
