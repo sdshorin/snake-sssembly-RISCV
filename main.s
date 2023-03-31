@@ -129,5 +129,5 @@ loop_end:
 
 
 .include "game_step.s"
-
+.include "sprites/game_assets.s"
 

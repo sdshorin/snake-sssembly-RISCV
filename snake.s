@@ -317,9 +317,9 @@ FUNC_draw_food:
     lw a0, 0(t0)
     # # a1 - y
     lw a1, 4(t0)
-    # # a2 - color
-    li a2, 0xffd300
-    jal ra, FUNC_draw_cell
+    # # a2 - pointer to texture
+    la a2, asset_apple
+    jal ra, FUNC.draw_tile
 
     popw(s3)
     popw(.circle_array)

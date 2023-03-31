@@ -28,8 +28,8 @@ game_step:
     jal ra, FUNC_check_food # Check is snake can eat food
     
     jal ra, FUNC_reset_display
-    jal ra, FUNC_draw_snake
     jal ra, FUNC_draw_food
+    jal ra, FUNC_draw_snake
 
 
     popw(s0)

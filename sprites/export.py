@@ -26,9 +26,10 @@ def export_image(image_path, params):
     image_rgba = image.convert("RGBA")
     width, height = image_rgba.size
 
-    export_content = ""
+    export_content = ".data\n"
     export_content += params["output_name"] + ":\n"
-    export_content += f".word {width}, {height}\n"
+    export_content += f".word {width}, {height} # width, height\n"
+    export_content += f".word {width * 4}, {height * 4} # width, height in bytes\n"
 
     for y in range(height):
         for x in range(width):
