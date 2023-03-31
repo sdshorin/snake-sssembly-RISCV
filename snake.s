@@ -317,8 +317,28 @@ FUNC_draw_food:
     lw a0, 0(t0)
     # # a1 - y
     lw a1, 4(t0)
-    # # a2 - pointer to texture
+
+    la t0, food_assert
+    lw t1, 0(t0) # load current prop type
+    li t0, 0 # 0 - apple
+    beq t1, t0, draw_food.apple
+    li t0, 1 # 1 - mouse
+    beq t1, t0, draw_food.mouse
+    li t0, 2 # 1 - mushroom
+    beq t1, t0, draw_food.mushroom
+
+    # a2 - pointer to texture
+draw_food.mushroom:
+    la a2, asset_mushroom
+    j draw_food.call_draw_tile
+draw_food.mouse:
+    la a2, asset_mouse
+    j draw_food.call_draw_tile
+draw_food.apple:
     la a2, asset_apple
+    j draw_food.call_draw_tile
+
+draw_food.call_draw_tile:
     jal ra, FUNC.draw_tile
 
     popw(s3)
@@ -347,6 +367,16 @@ FUNC_spawn_new_food:
     la t0, food_position # load food position
     sw t1, 0(t0) # food x
     sw t2, 4(t0) # food y
+
+    mv   a0, zero
+    li   a1, FOOD_PROPS_QUANTITY 
+    li   a7, 42
+    ecall  # random [0, FOOD_PROPS_QUANTITY)
+    mv t1, a0
+
+    la t0, food_assert
+    sw t1, 0(t0) # save the new prop type
+
     put_char('F')
     popw(s3)
     popw(.circle_array)

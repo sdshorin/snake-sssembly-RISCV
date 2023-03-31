@@ -31,12 +31,16 @@
 
 .eqv DISPLAY_ADDRESS 0x10040000
 
+.eqv FOOD_PROPS_QUANTITY 3
+
 BOOM_STR:
     .asciz "BOOM! GAME END!"
 
 food_position:
     .word 5 # x
     .word 5 # y
+food_assert:
+    .word 0 # 0 - apple, 1 - mouse, 2 - mushroom
 
 # Circle array with snake data - allow push and pop operations in O(1)
 # store each element in machine world (4 bytes)
