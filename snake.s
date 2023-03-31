@@ -405,8 +405,8 @@ FUNC.get_points_direction:
     beq a2, t0, get_points_direction.left
 
     # snake go threw screen side 
-    bge a2, zero, get_points_direction.right
-    bge zero, a2, get_points_direction.left
+    bge a2, zero, get_points_direction.left
+    bge zero, a2, get_points_direction.right
 
 get_points_direction.check_y:
     sub a3, a3, a1 # to_y = to_y - from_y
@@ -418,8 +418,8 @@ get_points_direction.check_y:
     beq a3, t0, get_points_direction.top
 
     # snake go threw screen side
-    bge a3, zero, get_points_direction.bottom
-    bge zero, a3, get_points_direction.top
+    bge a3, zero, get_points_direction.top
+    bge zero, a3, get_points_direction.bottom
 
 get_points_direction.left:
     li a0, LEFT
@@ -488,11 +488,27 @@ draw_snake_pretty.loop:
     mv .current_x, .next_x,
     mv .current_y, .next_y,
 
+draw_snake_pretty.loop.reload_last_element:
+    # check is .current_element is last - shoud we load next element?
+    mv t0, .snake_length
+    addi t0, t0, -1
+    beq .current_element, t0, draw_snake_pretty.loop.next_element_ok # process last element -
+                                                                     # it doesn't have next, jast slip loading
+
     # load next element
     mv a0, .circle_array
     addi a1, .current_element, 1 # get next element (maybe it's .snake_length + 1 - doesn't matter,
                                 # in this case .next won't be used
     jal ra, FUNC_circle_array_get_elem
+
+    bne .current_x, a0, draw_snake_pretty.loop.next_element_ok
+    bne .current_y, a1, draw_snake_pretty.loop.next_element_ok
+
+    # next element has the same potition (is't props) - skip it
+    addi .current_element, .current_element, 1
+    j draw_snake_pretty.loop.reload_last_element
+
+draw_snake_pretty.loop.next_element_ok:
     mv .next_x, a0 # save next segment to .next
     mv .next_y, a1
 
