@@ -16,7 +16,7 @@
 .eqv FIELD_HEIGHT 8 # 256 / 32
 
 # .eqv FRAME_TIME 2000 # 2s for evefy frime, 0.5  FPS
-.eqv FRAME_TIME 200 # 0.2s for evefy frime, 10 FPS
+.eqv FRAME_TIME 500 # 0.2s for evefy frime, 10 FPS
 
 .eqv SEGMENT_DATA_SIZE 4 # size of stuct with snake body element.
                         # (x, y, metadata_1, metadata_2)
@@ -48,6 +48,12 @@ food_assert:
     .word 0 # 0 - apple, 1 - mouse, 2 - mushroom
 is_first_frame_drawn:
     .word 0
+
+.eqv MAP_DECORATION_PROBABILITY_BASE 31 # MAP_DECORATION_QUANTITY / MAP_DECORATION_PROBABILITY_BASE = 16% probability of decoration in tile
+                                        # must not be a zero divisor
+.eqv MAP_DECORATION_QUANTITY 5
+map_decorations_table:
+.word asset_flower, asset_flower_orange, asset_flower_small, asset_grass, asset_grass_black
 
 # Snake tiles table. Allow to select title with target shipe and rotation
 # to tind a head tail with next element on top, just load correesponded pointer: (la snake_head_table) + (TOP) * 4

@@ -6,6 +6,8 @@
 .eqv .t_temp_dis t3
 .eqv .t_lines_to_draw t4
 
+
+
 # fiil all display with green
 FUNC_reset_display:
     li .t_display_ptr, DISPLAY_ADDRESS # FUNC_reset_display
@@ -23,18 +25,79 @@ reset_screen_loop:
     sw .t_color, 0(.t_display_ptr)
     addi .t_display_ptr, .t_display_ptr, 4
     j reset_screen_loop
-    
+
 
 FUNC_return_reset_display:
     jalr zero, 0(ra) # FUNC_return_reset_display
+    
+
+
+# fiil all display with green, add decorations
+FUNC.reset_display_with_titles:
+    .eqv .current_line, s0
+    .eqv .current_row, s1
+    .eqv .max_lines, s2
+    .eqv .max_rows, s3
+
+    pushw(ra)
+    pushw(.current_line)
+    pushw(.current_row)
+    pushw(.max_lines)
+    pushw(.max_rows)
+
+    li .current_line, 0
+    li .max_lines, FIELD_HEIGHT
+    li .max_rows, FIELD_WIDTH
+reset_display_with_titles.loop.lines:
+    beq .current_line, .max_lines, reset_display_with_titles.return
+    li .current_row, 0
+    
+reset_display_with_titles.loop.lines.rows:
+    beq .current_row, .max_rows, reset_display_with_titles.loop.lines.rows_ends
+    # call func
+    mv a0, .current_row
+    mv a1, .current_line
+    jal ra, FUNC.reset_cell
+
+    addi .current_row, .current_row, 1
+    j reset_display_with_titles.loop.lines.rows
+
+reset_display_with_titles.loop.lines.rows_ends:
+    addi .current_line, .current_line, 1
+    j reset_display_with_titles.loop.lines
+
+reset_display_with_titles.return:
+    
+    popw(.max_rows)
+    popw(.max_lines)
+    popw(.current_row)
+    popw(.current_line)
+    popw(ra)
+    jalr zero, 0(ra) # reset_display_with_titles
+
 
 # paint over cell to hide content
 # a0 - x
 # a1 - y
 FUNC.reset_cell:
     pushw(ra)
+    pushw(s0)
+    pushw(s1)
+
+    mv s0, a0
+    mv s1, a1
+    jal ra, FUNC.check_and_draw_map_decoration
+    bne a0, zero, reset_cell.cell_reseted # cell was already reseted in FUNC.check_and_draw_map_decoration
+    
+    mv a0, s0
+    mv a1, s1
+
     li a2, BACKGROUND_COLOR
     jal ra, FUNC_draw_cell
+
+reset_cell.cell_reseted:
+    popw(s1)
+    popw(s0)
     popw(ra)
     jalr zero, 0(ra)
 
@@ -83,6 +146,65 @@ FUNC_return_draw_cell:
     
     jalr zero, 0(ra) # FUNC_return_draw_cell
 
+
+
+
+# a0 - x
+# a1 - y
+# crate random map decoration (or nothing) based on coordinats
+# return: a0==0 - if cell did not reset
+#         a0==1 - if cell was reseted
+
+FUNC.check_and_draw_map_decoration:
+    pushw(ra)
+    pushw(s0)
+    pushw(s1)
+    pushw(s2)
+
+    mv s1, a0
+    mv s2, a1
+
+    addi a0, a0, 234
+    addi a1, a1, 678
+
+    li t0, 813 # just a random prime number
+    li t1, 1001 # just a random prime number
+    mul t0, a0, t0
+    mul t1, a1, t1
+
+    add t2, t1, t0
+    li a0, 0
+    li t3, MAP_DECORATION_PROBABILITY_BASE
+    rem t2, t2, t3
+
+    # print_int(t2)
+    # newline
+
+    blt t2, zero, map_decoration.skip_tile # t2 less then zero (it is impossibly??)
+
+    li t4, MAP_DECORATION_QUANTITY
+    bge t2, t4, map_decoration.skip_tile # this is ordinary cell - t2 >= MAP_DECORATION_QUANTITY
+
+    li t4, 4
+    mul t2, t2, t4 # convert tile number ti byte offset in map_decorations_table
+    la a2, map_decorations_table
+    add a2, a2, t2 # a2 points to tile
+    lw a2, 0(a2) # load pointer to tile
+    
+
+    mv a0, s1
+    mv a1, s2
+    jal ra, FUNC.draw_tile
+    li a0, 1
+    
+    
+
+map_decoration.skip_tile:
+    popw(s2)
+    popw(s1)
+    popw(s0)
+    popw(ra)
+    jalr zero, 0(ra)
 
 
 # a0 - x

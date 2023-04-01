@@ -24,15 +24,15 @@ game_step:
     # print current position
     mv s0, a0
     mv s1, a1
-    put_string(POS)
-    print_int(s0)
-    put_char(' ')
-    print_int(s1)
-    newline
+    # put_string(POS)
+    # print_int(s0)
+    # put_char(' ')
+    # print_int(s1)
+    # newline
 
     jal ra, FUNC_check_food # Check is snake can eat food
     
-    #jal ra, FUNC_reset_display
+    #jal ra, FUNC.reset_display
     jal ra, FUNC_draw_food
     # jal ra, FUNC_draw_snake
     jal ra, FUNC.draw_snake_pretty
@@ -59,7 +59,10 @@ prepare_display.draw_background:
     la t0, is_first_frame_drawn
     li t1, 1
     sw t1, 0(t0)
-    jal ra, FUNC_reset_display
+    
+    # jal ra, FUNC.reset_display
+    
+    jal ra, FUNC.reset_display_with_titles
     j prepare_display.return
 
 prepare_display.paint_over:

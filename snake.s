@@ -271,7 +271,7 @@ FUNC_detect_collisions:
     bge s8, s3, RETURN_detect_collisions # snake too short
 
     li s8, 2 # check snake from third element
-    print_int(s3)
+    # print_int(s3)
 detect_collisions_loop:
     bge s8, s3, RETURN_detect_collisions
 
@@ -284,15 +284,15 @@ detect_collisions_loop:
     mv s7, a1
     addi s8, s8, 1
 
-    newline
-    print_int(s6)
-    put_char(' ')
-    print_int(s7)
-    put_char('-')
-    print_int(s4)
-    put_char(' ')
-    print_int(s5)
-    newline
+    # newline
+    # print_int(s6)
+    # put_char(' ')
+    # print_int(s7)
+    # put_char('-')
+    # print_int(s4)
+    # put_char(' ')
+    # print_int(s5)
+    # newline
     bne s6, s4, detect_collisions_loop
     bne s7, s5, detect_collisions_loop
     put_string(BOOM_STR)
@@ -568,11 +568,11 @@ draw_snake_pretty.loop.next_element_ok:
     mv .next_elem_dir, a0
 
     # put_string(POS)
-    newline
-    print_int(.prev_elem_dir)
-    put_char(' ')
-    print_int(.next_elem_dir)
-    newline
+    # newline
+    # print_int(.prev_elem_dir)
+    # put_char(' ')
+    # print_int(.next_elem_dir)
+    # newline
 
 
     # select current snake part
