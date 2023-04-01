@@ -23,6 +23,36 @@ CONFIG = {
             "output_name": "asset_mushroom"
         }
     ],
+    "flower.png": [
+        {
+            # "rotation": 0,
+            "output_name": "asset_flower"
+        }
+    ],
+    "flower_orange.png": [
+        {
+            # "rotation": 0,
+            "output_name": "asset_flower_orange"
+        }
+    ],
+    "flower_small.png": [
+        {
+            # "rotation": 0,
+            "output_name": "asset_flower_small"
+        }
+    ],
+    "grass.png": [
+        {
+            # "rotation": 0,
+            "output_name": "asset_grass"
+        }
+    ],
+    "grass_black.png": [
+        {
+            # "rotation": 0,
+            "output_name": "asset_grass_black"
+        }
+    ],
     "head.png": [
         {
             # "rotation": 0,
@@ -115,6 +145,27 @@ CONFIG = {
     ],
 }
 
+CUT_TILES_CONFIG = {
+    "background.png": {
+        "grass.png": {
+            "x": 7, "y": 34
+        },
+        "flower.png": {
+            "x": 82, "y": 15
+        },
+        "grass_black.png": {
+            "x": 83, "y": 48
+        },
+        "flower_orange.png": {
+            "x": 80, "y": 132
+        },
+        "flower_small.png": {
+            "x": 41, "y": 85
+        },
+    }
+}
+
+
 ASSETS_IMPORT_FILE = "game_assets.s"
 PNG_SOURCE_DIR = "png_source/"
 ASSETS_DIR = "assets/"
@@ -160,5 +211,18 @@ def main():
     create_asserts_import(files)
 
 
+
+def split_image(config):
+    for image_path in config:
+        image = Image.open(PNG_SOURCE_DIR + image_path)
+        for tile_path in config[image_path]:
+            x = config[image_path][tile_path]["x"]
+            y = config[image_path][tile_path]["y"]
+            box = (x, y, x + 32, y + 32)
+            tile = image.crop(box)
+            tile.save(PNG_SOURCE_DIR + tile_path)
+
+
 if __name__ == "__main__":
+    # split_image(CUT_TILES_CONFIG) # create tiles images from background
     main()

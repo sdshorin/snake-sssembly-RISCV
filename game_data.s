@@ -34,7 +34,7 @@
 .eqv TAILL 3 # doesn't compile with TAIL. Therefore double L using here
 
 .eqv DISPLAY_ADDRESS 0x10040000
-.eqv BACKGROUND_COLOR 0x00af00
+.eqv BACKGROUND_COLOR 0xff8bb410
 
 .eqv FOOD_PROPS_QUANTITY 3
 
