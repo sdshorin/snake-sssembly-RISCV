@@ -4,11 +4,10 @@
 .eqv .current_direction s0
 .eqv .snake_ptr s1
 .eqv .circle_array s2
-
 .eqv .t_temp_sn, t0
 
-# check is direction changing is valid and store new value in snake_data
-# a0 - new direction.Can be WASD or zero
+# Checks if a direction change is valid and stores the new value in snake_data
+# a0 - new direction. Can be WASD or zero
 FUNC_update_snake_direction:
     pushw(ra)
     pushw(.current_direction)
@@ -22,26 +21,26 @@ FUNC_update_snake_direction:
 
 # start check from TOP
     li t0, TOP
-    bne t0, .current_direction, skip_top # check is current_direction is TOP
+    bne t0, .current_direction, skip_top # check if current_direction is TOP
     li t0, BOTTOM
     beq t0, a0, FUNC_return_upt_s_dir # Can't change from top to bottom
     sw a0, 0(.snake_ptr) # Change direction
 
 skip_top: # check LEFT
     li t0, LEFT
-    bne t0, .current_direction, skip_left # check is current_direction is LEFT
+    bne t0, .current_direction, skip_left # check if current_direction is LEFT
     li t0, RIGHT
     beq t0, a0, FUNC_return_upt_s_dir # Can't change from LEFT to RIGHT
     sw a0, 0(.snake_ptr) # Change direction
 skip_left: # check BOTTOM
     li t0, BOTTOM
-    bne t0, .current_direction, skip_bottom # check is current_direction is BOTTOM
+    bne t0, .current_direction, skip_bottom # check if current_direction is BOTTOM
     li t0, TOP
     beq t0, a0, FUNC_return_upt_s_dir # Can't change from BOTTOM to TOP
     sw a0, 0(.snake_ptr) # Change direction
 skip_bottom: # check RIGHT
     li t0, RIGHT
-    bne t0, .current_direction, FUNC_return_upt_s_dir # check is current_direction is RIGHT
+    bne t0, .current_direction, FUNC_return_upt_s_dir # check if current_direction is RIGHT
     li t0, LEFT
     beq t0, a0, FUNC_return_upt_s_dir # Can't change from RIGHT to LEFT
     sw a0, 0(.snake_ptr) # Change direction
@@ -53,7 +52,7 @@ FUNC_return_upt_s_dir:
     jalr zero, 0(ra) # return update_snake_direction
 
 
-# Convert WASD in a0 to TOP LEFT RIGHT BOTTOM 
+# Convert WASD input in a0 to TOP, LEFT, RIGHT, or BOTTOM
 FUNC_decode_input:
 decode_w:
     li t0, 'w'
@@ -79,8 +78,8 @@ FUNC_return_decode_input: # return decode_input
     jalr zero, 0(ra)
 
 
-# move snake in the chosen direction
-# return new head position in (a0, a1): (x, y)
+# Move snake in the chosen direction
+# Return new head position as (x, y) in (a0, a1)
 FUNC_move_snake:
     pushw(ra)
     pushw(.snake_ptr)
@@ -89,7 +88,7 @@ FUNC_move_snake:
 
     # load snake data
     la .snake_ptr, snake_data
-    lw .current_direction, 0(.snake_ptr) # load the direction of snake in the previous frame
+    lw .current_direction, 0(.snake_ptr) # Load the direction of the snake from the previous frame
     mv .circle_array, .snake_ptr
     addi .circle_array, .circle_array, 4 # pointer to snake circle array
 
@@ -100,7 +99,7 @@ FUNC_move_snake:
     # a0 - x of head
     # a1 - y of head
 
-    # add direction to coordinates
+    # Add direction to the coordinates
     li .t_temp_sn, TOP
     bne .current_direction, .t_temp_sn, move_check_left 
     addi a1, a1, -1 # move TOP: y -= 1
@@ -123,7 +122,7 @@ move_check_right:
     j move_remainder_by_field
     
 move_remainder_by_field:
-    #reminded by field size
+    # Wrap coordinates by field size
     li .t_temp_sn, FIELD_WIDTH
     addi a0, a0, FIELD_WIDTH # to handle negative numbers
     rem a0, a0, .t_temp_sn # x = x % FIELD_WIDTH
@@ -151,16 +150,16 @@ move_remainder_by_field:
     jalr zero, 0(ra)
 
 
-# draw all segments of snake
+# Draw all segments of the snake
 FUNC_draw_snake:
     pushw(ra)
     pushw(.circle_array)
     pushw(s3)
-    # get first snake segment
+    # Get the first snake segment
     la .circle_array, snake_data
     addi .circle_array, .circle_array, 4 # pointer to snake circle array
 
-    lw s3, 0(.circle_array) # save snake lengthto s3
+    lw s3, 0(.circle_array) # Save snake length to s3
 
 draw_snake_loop:
     beqz s3, FUNC_return_draw_snake
@@ -168,12 +167,12 @@ draw_snake_loop:
     mv a0, .circle_array
     addi a1, s3, -1 # get next index
     jal ra, FUNC_circle_array_get_elem
-    # # a0 - x of head
-    # # a1 - y of head
+    # a0 - x of head
+    # a1 - y of head
     li a2, 0xff0000
-    # # a0 - x
-    # # a1 - y
-    # # a2 - color
+    # a0 - x
+    # a1 - y
+    # a2 - color
     jal ra, FUNC_draw_cell
     addi s3, s3, -1
     j draw_snake_loop
@@ -185,7 +184,8 @@ FUNC_return_draw_snake:
     jalr zero, 0(ra)
 
 
-# paint over snake and props to speed up screen updating
+
+# Paint over the snake and props to speed up screen updating
 FUNC.paint_over_titles:
     pushw(ra)
     pushw(.circle_array)
@@ -196,11 +196,11 @@ FUNC.paint_over_titles:
     lw a1, 4(t0) # food y
     jal ra, FUNC.reset_cell
 
-    # get first snake segment
+    # Get the first snake segment
     la .circle_array, snake_data
     addi .circle_array, .circle_array, 4 # pointer to snake circle array
 
-    lw s3, 0(.circle_array) # save snake lengthto s3
+    lw s3, 0(.circle_array)
 paint_over_titles.loop:
     beqz s3, paint_over_titles.return
 
@@ -220,21 +220,21 @@ paint_over_titles.return:
     jalr zero, 0(ra)
 
 
-# add new element to beggining of snake
+# Add a new element to the beginning of the snake
 FUNC_increase_snake:
     nop # FUNC_increase_snake
     pushw(ra)
     pushw(.circle_array)
     pushw(s3)
 
-    # load snake head
+    # Load snake head
     la .circle_array, snake_circle_array # get snake struct
 
     mv a0, .circle_array
     li a1, 0
     jal ra, FUNC_circle_array_get_elem
-    # # a0 - x
-    # # a1 - y
+    # a0 - x
+    # a1 - y
 
     mv a2, a1 # a2 = y
     mv a1, a0 # a1 = x
@@ -248,7 +248,7 @@ FUNC_increase_snake:
 
 
 FUNC_detect_collisions:
-    nop # FUNC_increase_snake
+    nop # FUNC_detect_collisions
     pushw(ra)
     pushw(.circle_array)
     pushw(s3)
@@ -258,41 +258,30 @@ FUNC_detect_collisions:
     pushw(s7)
     pushw(s8)
 
-    la .circle_array, snake_circle_array # init pointer to snake struct
+    la .circle_array, snake_circle_array # Initialize pointer to snake struct
     mv a0, .circle_array
     li a1, 0
-    jal ra, FUNC_circle_array_get_elem # get first snake segment
+    jal ra, FUNC_circle_array_get_elem # Get first snake segment
 
     mv s4, a0 # s4 stores the x coordinate of the head
     mv s5, a1 # s5 stores the x coordinate of the head
 
-    lw s3, 0(.circle_array) # save snake lengthto s3
-    li s8, 2 # check snake from third element
-    bge s8, s3, RETURN_detect_collisions # snake too short
+    lw s3, 0(.circle_array)
+    li s8, 2 # Check snake from the third element
+    bge s8, s3, RETURN_detect_collisions # Snake is too short
 
-    li s8, 2 # check snake from third element
-    # print_int(s3)
 detect_collisions_loop:
     bge s8, s3, RETURN_detect_collisions
 
     mv a0, .circle_array
     mv a1, s8 # get next index
     jal ra, FUNC_circle_array_get_elem
-    # # a0 - x of head
-    # # a1 - y of head
+    # a0 - x of head
+    # a1 - y of head
     mv s6, a0
     mv s7, a1
     addi s8, s8, 1
 
-    # newline
-    # print_int(s6)
-    # put_char(' ')
-    # print_int(s7)
-    # put_char('-')
-    # print_int(s4)
-    # put_char(' ')
-    # print_int(s5)
-    # newline
     bne s6, s4, detect_collisions_loop
     bne s7, s5, detect_collisions_loop
     put_string(BOOM_STR)

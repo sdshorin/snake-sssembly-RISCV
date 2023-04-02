@@ -4,7 +4,7 @@
 
 ## 1. Introduction
 
-In this project, we present a simple yet entertaining Snake game implemented using RISC-V Assembly language, running on a simulated processor with a memory-mapped I/O system.
+In this project, I present a simple yet entertaining Snake game implemented using RISC-V Assembly language, running on a simulated processor with a memory-mapped I/O system.
 It leverages timer and keyboard interrupts to handle user inputs and control game updates efficiently. The project features a modular structure, utilizing separate files for managing game logic, data structures, and utility functions, resulting in a clean and maintainable codebase.
 
 ## 2. Project Structure
@@ -16,13 +16,14 @@ This project consists of the following files:
 *   `game_step.s`: Contains the main game loop, which calls various functions every frame and updates the game based on user input.
 *   `snake.s`: Encapsulates the game logic, handling snake movement and direction changes.
 *   `circle_array.s`: Provides a circular array data structure that supports efficient push and pop operations in O(1) time, which is essential for managing the snake's body segments.
+*   `display.s`: This file contains functions related to screen manipulation and rendering, such as resetting the display, drawing individual cells, and drawing map decorations. It also includes functions for drawing snake tiles (head, body, and tail) based on the direction of the snake's movement.
 
 ## 3. Game Logic
 
 The game logic in this project is primarily implemented in the `game_step.s` file. It is responsible for handling the snake's movement, detecting collisions with itself, and managing the snake's growth when it consumes food. The main game loop in main.s calls the game_step function every 0.2 seconds, passing the last input from the keyboard as a parameter. The snake moves in the direction of the last input (using 'w', 'a', 's', 'd' keys) and updates its position accordingly. The game detects collisions and handles the snake's growth by utilizing the circular buffer data structure provided in circle_array.s. The game continues until the snake collides with itself.
 
 
-## 4.  Building and Running the Game
+## 4. Building and Running the Game
 
 To build and run the Snake game, follow the steps below:
 
@@ -36,8 +37,11 @@ To build and run the Snake game, follow the steps below:
 8.  Place the cursor in the bottom frame of the Keyboard Tool, and enjoy the game. Control the snake using the WASD keys.
 
 
-##
+## 5. Future Improvements
 
-- Use FPGRARS for speed up an convenience
-- Add animations
-- Rars don't support big textures
+- `Game End screen`: Display a game over screen with options to restart or exit.
+- `Use FPGRARS`: Improve performance and convenience by using Fast Pretty Good RISC-V Assembly Rendering System.
+- `Add animations`: Introduce animations for various game elements.
+- `Show score`: Display the final score after the game ends, with a high-score feature.
+- `Avoid food under snake, improve collision detection`: Implement `find_with_start_offset` function in `circle_array.s` and use it in `snake.s` for food generation to prevent spawning on snake's body, as well as in collision detection to enhance performance and readability of the code.
+

@@ -8,7 +8,9 @@
 
 
 
-# fiil all display with green
+# This function fills the entire display with a BACKGROUND_COLOR color
+# which is the background color of the game field.
+# It's not in use now
 FUNC_reset_display:
     li .t_display_ptr, DISPLAY_ADDRESS # FUNC_reset_display
 
@@ -32,7 +34,9 @@ FUNC_return_reset_display:
     
 
 
-# fiil all display with green, add decorations
+# This function fills the entire display
+# with the background color and adds decorations
+# to the game field based on the coordinates.
 FUNC.reset_display_with_titles:
     .eqv .current_line, s0
     .eqv .current_row, s1
@@ -76,7 +80,9 @@ reset_display_with_titles.return:
     jalr zero, 0(ra) # reset_display_with_titles
 
 
-# paint over cell to hide content
+ # This function is used to paint over a cell to hide its content.
+ # It takes the x and y coordinates as arguments and resets
+ # the cell by drawing over it with the background color or map decoration.
 # a0 - x
 # a1 - y
 FUNC.reset_cell:
@@ -102,6 +108,8 @@ reset_cell.cell_reseted:
     jalr zero, 0(ra)
 
 
+# This function draws a cell with the
+# specified color at the given x and y coordinates.
 # a0 - x
 # a1 - y
 # a2 - color
@@ -148,13 +156,13 @@ FUNC_return_draw_cell:
 
 
 
-
+# This function checks if a map decoration
+# should be drawn at the given x and y coordinates,
+# and if so, it draws the decoration using the FUNC.draw_tile function.
 # a0 - x
 # a1 - y
-# crate random map decoration (or nothing) based on coordinats
 # return: a0==0 - if cell did not reset
 #         a0==1 - if cell was reseted
-
 FUNC.check_and_draw_map_decoration:
     pushw(ra)
     pushw(s0)
@@ -197,8 +205,6 @@ FUNC.check_and_draw_map_decoration:
     jal ra, FUNC.draw_tile
     li a0, 1
     
-    
-
 map_decoration.skip_tile:
     popw(s2)
     popw(s1)
@@ -206,7 +212,8 @@ map_decoration.skip_tile:
     popw(ra)
     jalr zero, 0(ra)
 
-
+# This function draws a tile at the specified
+# x and y coordinates using the given texture pointer.
 # a0 - x
 # a1 - y
 # a2 - pointer to texture
@@ -262,8 +269,10 @@ return.draw_cell:
     jalr zero, 0(ra) # return.draw_cell
 
 
-# This function look up pointer snake tile in 2-d array (according to 
-# previous and next elements positions) and call FUNC.draw_tile to draw it
+
+# This function draws a snake tile (head, body, or tail)
+# at the specified x and y coordinates, considering the previous
+# and next element positions, and the tile type (head, body, or tail).
 # a0 = x
 # a1 = y
 # a2 = previous element position
