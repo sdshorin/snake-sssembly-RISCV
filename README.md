@@ -1,5 +1,7 @@
 # Snake Game in RISC-V Assembly
 
+![showcase](images/example.gif)
+
 ## 1. Introduction
 
 In this project, we present a simple yet entertaining Snake game implemented using RISC-V Assembly language, running on a simulated processor with a memory-mapped I/O system.
