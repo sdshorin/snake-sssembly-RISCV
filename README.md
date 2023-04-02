@@ -1,6 +1,6 @@
 # Snake Game in RISC-V Assembly
 
-![showcase](images/example.gif)
+![showcase](examples/example.gif)
 
 ## 1. Introduction
 
@@ -35,3 +35,9 @@ To build and run the Snake game, follow the steps below:
 7.  Run the project in RARS.
 8.  Place the cursor in the bottom frame of the Keyboard Tool, and enjoy the game. Control the snake using the WASD keys.
 
+
+##
+
+- Use FPGRARS for speed up an convenience
+- Add animations
+- Rars don't support big textures
